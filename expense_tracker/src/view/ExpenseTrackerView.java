@@ -127,6 +127,24 @@ public class ExpenseTrackerView extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setVisible(true);
 
+    transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+      @Override
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+          Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+          // Determine if this row should be highlighted
+          boolean isHighlighted = row < rowHighlights.size() && rowHighlights.get(row);
+
+          if (isHighlighted) {
+              c.setBackground(new Color(173, 255, 168)); // Light green
+          } else {
+              c.setBackground(Color.WHITE);
+          }
+
+          return c;
+      }
+  });
+
   
   }
 
@@ -152,6 +170,34 @@ public class ExpenseTrackerView extends JFrame {
       transactionsTable.updateUI();
   
     }  
+
+  public void refreshTableWithHighlightedRows(List<Transaction> transactions, List<Transaction> filteredTransactions) {
+      // Clear existing rows
+      model.setRowCount(0);
+      int rowNum = model.getRowCount();
+      double totalCost=0;
+      // Calculate total cost
+      for(Transaction t : transactions) {
+        totalCost+=t.getAmount();
+      }
+
+      // Clear the list and add new values based on your filter criteria
+      rowHighlights.clear();
+
+      for (Transaction t : transactions) {
+          // Determine whether this row should be highlighted based on your filter criteria
+          boolean shouldHighlight = filteredTransactions.contains(t);
+          rowHighlights.add(shouldHighlight);
+
+          // Add rows from transactions list
+          model.addRow(new Object[]{rowNum+=1, t.getAmount(), t.getCategory(), t.getTimestamp()});
+      }
+          Object[] totalRow = {"Total", null, null, totalCost};
+          model.addRow(totalRow);
+
+      // Fire table update
+      transactionsTable.updateUI();
+  }
 
 
 // Add these methods to get input values from the view:
