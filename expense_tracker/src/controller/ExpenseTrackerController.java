@@ -54,12 +54,35 @@ public class ExpenseTrackerController {
     // Check the selected filter type and apply the filter
     if (selectedFilterType.equals("Category")) {
         // Apply category filter
+        if (!InputValidation.isValidCategory(categoryFilter)) {
+            JOptionPane.showMessageDialog(view, "Invalid filter category. Please enter a valid category.");
+            return;
+        }
         currentFilter = new CategoryFilter(categoryFilter);
     } else if (selectedFilterType.equals("Amount")) {
+        if (!InputValidation.isValidAmount(minAmountFilter)) {
+          JOptionPane.showMessageDialog(view, "Invalid minimum amount. Please enter a valid amount.");
+          return;
+        }
+        if (!InputValidation.isValidAmount(maxAmountFilter)) {
+          JOptionPane.showMessageDialog(view, "Invalid maximum amount. Please enter a valid amount.");
+          return;   
+        }
+        if (minAmountFilter > maxAmountFilter) {
+          JOptionPane.showMessageDialog(view, "Minimum amount cannot be greater than maximum amount. Please enter a valid range.");
+          return;
+        }
+
         // Apply amount filter
         currentFilter = new AmountFilter(minAmountFilter, maxAmountFilter);
     }
 
+    if (currentFilter != null) {
+        List<Transaction> filteredTransactions = currentFilter.filter(model.getTransactions());
+
+        // Highlight filtered transactions in green
+        view.refreshTableWithHighlightedRows(transactions, filteredTransactions);
+    }
 
 }
 
