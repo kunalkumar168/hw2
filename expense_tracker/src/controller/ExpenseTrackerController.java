@@ -1,17 +1,14 @@
 package controller;
-
+import javax.swing.JOptionPane;
 import view.ExpenseTrackerView;
-
 import java.util.List;
-
-
-
 import model.ExpenseTrackerModel;
 import model.Transaction;
 public class ExpenseTrackerController {
   
   private ExpenseTrackerModel model;
   private ExpenseTrackerView view;
+  private TransactionFilter currentFilter;
 
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
@@ -46,4 +43,25 @@ public class ExpenseTrackerController {
   }
   
   // Other controller methods
+
+  public void applyFilter() {
+    List<Transaction> transactions = model.getTransactions();
+    String selectedFilterType = view.getSelectedFilterType();
+    String categoryFilter = view.getFilterCategory();
+    double minAmountFilter = view.getMinAmountFilter();
+    double maxAmountFilter = view.getMaxAmountFilter();
+
+    // Check the selected filter type and apply the filter
+    if (selectedFilterType.equals("Category")) {
+        // Apply category filter
+        currentFilter = new CategoryFilter(categoryFilter);
+    } else if (selectedFilterType.equals("Amount")) {
+        // Apply amount filter
+        currentFilter = new AmountFilter(minAmountFilter, maxAmountFilter);
+    }
+
+
 }
+
+}
+
